@@ -75,6 +75,12 @@ int main(int argc, char* argv[], char* envp[])
         return 1;
     }
 
+    if(SQ_SIZE != 0x764AB0 || memcmp((const char*)(SQ + 0x225B4B), "SQ v0.92 May 13 1999", 21))
+    {
+        fprintf(stderr, "Unsupported game version\n");
+        return 1;
+    }
+
     Displayf("SQ %08X", SQ);
     SetUnhandledExceptionFilter(ExceptionHandler);
 
@@ -94,15 +100,15 @@ int Displayf(const char* format, ...)
 
 void FatalError(const char* format, ...)
 {
-	static char buffer[256];
-	va_list args;
-	va_start(args, format);
-	vsprintf_s(buffer, format, args);
-	va_end(args);
+    static char buffer[256];
+    va_list args;
+    va_start(args, format);
+    vsprintf_s(buffer, format, args);
+    va_end(args);
 
-	fprintf(stderr, "Fatal Error: %s\n", buffer);
+    fprintf(stderr, "Fatal Error: %s\n", buffer);
     MessageBoxA(NULL, buffer, "Fatal Error", MB_ICONERROR | MB_OK);
-	exit(0);
+    exit(0);
 }
 
 #include <Xinput.h>
@@ -249,26 +255,26 @@ const char* GetExceptionName(DWORD ExceptionCode)
     switch(ExceptionCode)
     {
         case EXCEPTION_ACCESS_VIOLATION: return "EXCEPTION_ACCESS_VIOLATION";
-		case EXCEPTION_ARRAY_BOUNDS_EXCEEDED: return "EXCEPTION_ARRAY_BOUNDS_EXCEEDED";
-		case EXCEPTION_BREAKPOINT: return "EXCEPTION_BREAKPOINT";
-		case EXCEPTION_DATATYPE_MISALIGNMENT: return "EXCEPTION_DATATYPE_MISALIGNMENT";
-		case EXCEPTION_FLT_DENORMAL_OPERAND: return "EXCEPTION_FLT_DENORMAL_OPERAND";
-		case EXCEPTION_FLT_DIVIDE_BY_ZERO: return "EXCEPTION_FLT_DIVIDE_BY_ZERO";
-		case EXCEPTION_FLT_INEXACT_RESULT: return "EXCEPTION_FLT_INEXACT_RESULT";
-		case EXCEPTION_FLT_INVALID_OPERATION: return "EXCEPTION_FLT_INVALID_OPERATION";
-		case EXCEPTION_FLT_OVERFLOW: return "EXCEPTION_FLT_OVERFLOW";
-		case EXCEPTION_FLT_STACK_CHECK: return "EXCEPTION_FLT_STACK_CHECK";
-		case EXCEPTION_FLT_UNDERFLOW: return "EXCEPTION_FLT_UNDERFLOW";
-		case EXCEPTION_ILLEGAL_INSTRUCTION: return "EXCEPTION_ILLEGAL_INSTRUCTION";
-		case EXCEPTION_IN_PAGE_ERROR: return "EXCEPTION_IN_PAGE_ERROR";
-		case EXCEPTION_INT_DIVIDE_BY_ZERO: return "EXCEPTION_INT_DIVIDE_BY_ZERO";
-		case EXCEPTION_INT_OVERFLOW: return "EXCEPTION_INT_OVERFLOW";
-		case EXCEPTION_INVALID_DISPOSITION: return "EXCEPTION_INVALID_DISPOSITION";
-		case EXCEPTION_NONCONTINUABLE_EXCEPTION: return "EXCEPTION_NONCONTINUABLE_EXCEPTION";
-		case EXCEPTION_PRIV_INSTRUCTION: return "EXCEPTION_PRIV_INSTRUCTION";
-		case EXCEPTION_SINGLE_STEP: return "EXCEPTION_SINGLE_STEP";
-		case EXCEPTION_STACK_OVERFLOW: return "EXCEPTION_STACK_OVERFLOW";
-		case DBG_CONTROL_C: return "DBG_CONTROL_C";
+        case EXCEPTION_ARRAY_BOUNDS_EXCEEDED: return "EXCEPTION_ARRAY_BOUNDS_EXCEEDED";
+        case EXCEPTION_BREAKPOINT: return "EXCEPTION_BREAKPOINT";
+        case EXCEPTION_DATATYPE_MISALIGNMENT: return "EXCEPTION_DATATYPE_MISALIGNMENT";
+        case EXCEPTION_FLT_DENORMAL_OPERAND: return "EXCEPTION_FLT_DENORMAL_OPERAND";
+        case EXCEPTION_FLT_DIVIDE_BY_ZERO: return "EXCEPTION_FLT_DIVIDE_BY_ZERO";
+        case EXCEPTION_FLT_INEXACT_RESULT: return "EXCEPTION_FLT_INEXACT_RESULT";
+        case EXCEPTION_FLT_INVALID_OPERATION: return "EXCEPTION_FLT_INVALID_OPERATION";
+        case EXCEPTION_FLT_OVERFLOW: return "EXCEPTION_FLT_OVERFLOW";
+        case EXCEPTION_FLT_STACK_CHECK: return "EXCEPTION_FLT_STACK_CHECK";
+        case EXCEPTION_FLT_UNDERFLOW: return "EXCEPTION_FLT_UNDERFLOW";
+        case EXCEPTION_ILLEGAL_INSTRUCTION: return "EXCEPTION_ILLEGAL_INSTRUCTION";
+        case EXCEPTION_IN_PAGE_ERROR: return "EXCEPTION_IN_PAGE_ERROR";
+        case EXCEPTION_INT_DIVIDE_BY_ZERO: return "EXCEPTION_INT_DIVIDE_BY_ZERO";
+        case EXCEPTION_INT_OVERFLOW: return "EXCEPTION_INT_OVERFLOW";
+        case EXCEPTION_INVALID_DISPOSITION: return "EXCEPTION_INVALID_DISPOSITION";
+        case EXCEPTION_NONCONTINUABLE_EXCEPTION: return "EXCEPTION_NONCONTINUABLE_EXCEPTION";
+        case EXCEPTION_PRIV_INSTRUCTION: return "EXCEPTION_PRIV_INSTRUCTION";
+        case EXCEPTION_SINGLE_STEP: return "EXCEPTION_SINGLE_STEP";
+        case EXCEPTION_STACK_OVERFLOW: return "EXCEPTION_STACK_OVERFLOW";
+        case DBG_CONTROL_C: return "DBG_CONTROL_C";
         default: return nullptr;
     }
 }
@@ -294,75 +300,75 @@ LONG WINAPI ExceptionHandler(_EXCEPTION_POINTERS* Info)
         {
             switch(Info->ExceptionRecord->ExceptionInformation[0])
             {
-				case 0:
-					fprintf(stderr, "Attempted to read from: 0x%08X\n", Info->ExceptionRecord->ExceptionInformation[1]);
-					break;
+                case 0:
+                    fprintf(stderr, "Attempted to read from: 0x%08X\n", Info->ExceptionRecord->ExceptionInformation[1]);
+                    break;
 
-				case 1:
-					fprintf(stderr, "Attempted to write to: 0x%08X\n", Info->ExceptionRecord->ExceptionInformation[1]);
-					break;
+                case 1:
+                    fprintf(stderr, "Attempted to write to: 0x%08X\n", Info->ExceptionRecord->ExceptionInformation[1]);
+                    break;
 
-				case 8:
-					fprintf(stderr, "Data Execution Prevention (DEP) at: 0x%08X\n", Info->ExceptionRecord->ExceptionInformation[1]);
-					break;
+                case 8:
+                    fprintf(stderr, "Data Execution Prevention (DEP) at: 0x%08X\n", Info->ExceptionRecord->ExceptionInformation[1]);
+                    break;
 
-				default:
-					fprintf(stderr, "Unknown access violation at: 0x%08X\n", Info->ExceptionRecord->ExceptionInformation[1]);
-					break;
+                default:
+                    fprintf(stderr, "Unknown access violation at: 0x%08X\n", Info->ExceptionRecord->ExceptionInformation[1]);
+                    break;
             }
 
             break;
         }
 
-		case EXCEPTION_IN_PAGE_ERROR:
-		{
-			switch(Info->ExceptionRecord->ExceptionInformation[0])
-			{
-				case 0:
-					fprintf(stderr, "Attempted to read from: 0x%08X\n", Info->ExceptionRecord->ExceptionInformation[1]);
-					break;
+        case EXCEPTION_IN_PAGE_ERROR:
+        {
+            switch(Info->ExceptionRecord->ExceptionInformation[0])
+            {
+                case 0:
+                    fprintf(stderr, "Attempted to read from: 0x%08X\n", Info->ExceptionRecord->ExceptionInformation[1]);
+                    break;
 
-				case 1:
-					fprintf(stderr, "Attempted to write to: 0x%08X\n", Info->ExceptionRecord->ExceptionInformation[1]);
-					break;
+                case 1:
+                    fprintf(stderr, "Attempted to write to: 0x%08X\n", Info->ExceptionRecord->ExceptionInformation[1]);
+                    break;
 
-				case 8:
-					fprintf(stderr, "Data Execution Prevention (DEP) at: 0x%08X\n", Info->ExceptionRecord->ExceptionInformation[1]);
-					break;
+                case 8:
+                    fprintf(stderr, "Data Execution Prevention (DEP) at: 0x%08X\n", Info->ExceptionRecord->ExceptionInformation[1]);
+                    break;
 
-				default:
-					fprintf(stderr, "Unknown access violation at: 0x%08X\n", Info->ExceptionRecord->ExceptionInformation[1]);
-					break;
-			}
+                default:
+                    fprintf(stderr, "Unknown access violation at: 0x%08X\n", Info->ExceptionRecord->ExceptionInformation[1]);
+                    break;
+            }
 
-			fprintf(stderr, "NTSTATUS: 0x%08X\n", Info->ExceptionRecord->ExceptionInformation[2]);
-			break;
-		}
+            fprintf(stderr, "NTSTATUS: 0x%08X\n", Info->ExceptionRecord->ExceptionInformation[2]);
+            break;
+        }
 
-		default:
+        default:
             break;
     }
 
-	if(Info->ContextRecord->ContextFlags & CONTEXT_SEGMENTS)
-	{
-		fprintf(stderr, "GS = 0x%x, FS = 0x%x, ES = 0x%x, DS = 0x%x\n", Info->ContextRecord->SegGs, Info->ContextRecord->SegFs, Info->ContextRecord->SegEs, Info->ContextRecord->SegDs);
-	}
+    if(Info->ContextRecord->ContextFlags & CONTEXT_SEGMENTS)
+    {
+        fprintf(stderr, "GS = 0x%x, FS = 0x%x, ES = 0x%x, DS = 0x%x\n", Info->ContextRecord->SegGs, Info->ContextRecord->SegFs, Info->ContextRecord->SegEs, Info->ContextRecord->SegDs);
+    }
 
-	if(Info->ContextRecord->ContextFlags & CONTEXT_INTEGER)
-	{
-		fprintf(stderr, "EDI = 0x%x, ESI = 0x%x, EBX = 0x%x\n", Info->ContextRecord->Edi, Info->ContextRecord->Esi, Info->ContextRecord->Ebx);
-		fprintf(stderr, "EDX = 0x%x, ECX = 0x%x, EAX = 0x%x\n", Info->ContextRecord->Edx, Info->ContextRecord->Ecx, Info->ContextRecord->Eax);
-	}
+    if(Info->ContextRecord->ContextFlags & CONTEXT_INTEGER)
+    {
+        fprintf(stderr, "EDI = 0x%x, ESI = 0x%x, EBX = 0x%x\n", Info->ContextRecord->Edi, Info->ContextRecord->Esi, Info->ContextRecord->Ebx);
+        fprintf(stderr, "EDX = 0x%x, ECX = 0x%x, EAX = 0x%x\n", Info->ContextRecord->Edx, Info->ContextRecord->Ecx, Info->ContextRecord->Eax);
+    }
 
-	if(Info->ContextRecord->ContextFlags & CONTEXT_CONTROL)
-	{
+    if(Info->ContextRecord->ContextFlags & CONTEXT_CONTROL)
+    {
         if(Info->ContextRecord->Eip >= SQ && Info->ContextRecord->Eip < SQ + SQ_SIZE)
             fprintf(stderr, "EBP = 0x%08X, EIP = 0x%x (0x%08X), CS = 0x%08X\n", Info->ContextRecord->Ebp, Info->ContextRecord->Eip, Info->ContextRecord->Eip - SQ, Info->ContextRecord->SegCs);
         else
             fprintf(stderr, "EBP = 0x%08X, EIP = 0x%08X, CS = 0x%08X\n", Info->ContextRecord->Ebp, Info->ContextRecord->Eip, Info->ContextRecord->SegCs);
 
-		fprintf(stderr, "EFLAGS = 0x%08X, ESP = 0x%08X, SS = 0x%08X\n", Info->ContextRecord->EFlags, Info->ContextRecord->Esp, Info->ContextRecord->SegSs);
-	}
+        fprintf(stderr, "EFLAGS = 0x%08X, ESP = 0x%08X, SS = 0x%08X\n", Info->ContextRecord->EFlags, Info->ContextRecord->Esp, Info->ContextRecord->SegSs);
+    }
 
     uintptr_t Esp = Info->ContextRecord->Esp;
     for(size_t i = 0; i < 480; i += 16)
