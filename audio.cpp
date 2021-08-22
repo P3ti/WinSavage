@@ -683,6 +683,8 @@ void AudioStream::Service()
 				currentLoopIndex = currentLoop.nextLoopIndex;
 			else
 				currentLoopIndex = 0;
+
+			currentLoop = loops[currentLoopIndex];
 		}
 	}
 
