@@ -29,8 +29,25 @@ Ret WatcomCall(uintptr_t address)
 template<typename Ret, typename... Args>
 Ret WatcomCall(uintptr_t address, Args&&... args)
 {
-	return (Ret)WatcomCall(address, (uintptr_t)args...);
+	return (Ret)WatcomCall(address, (uintptr_t)std::forward<Args>(args)...);
 }
+
+template<typename Sig>
+struct WatcomFunc;
+
+template<typename Ret, typename... Args>
+struct WatcomFunc<Ret(Args...)>
+{
+	uintptr_t address;
+
+	WatcomFunc(uintptr_t address = 0)
+		: address(address) { }
+
+	Ret operator()(Args... args)
+	{
+		return WatcomCall<Ret, Args...>(address, std::forward<Args>(args)...);
+	}
+};
 
 extern const uintptr_t WatcomStdcallHookThunks[5];
 extern const uintptr_t WatcomCdeclHookThunks[5];
