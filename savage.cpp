@@ -17,10 +17,16 @@ void PatchAudioSystem(uintptr_t SQ);
 
 int Displayf(const char* format, ...);
 
-DWORD rtRoot_Update;
-void rtRoot_Update_Hook();
+WatcomFunc<void*(void*, const char*)> HashTable_Access;
+WatcomFunc<bool(void*, const char*, void*)> HashTable_Insert;
 
-uint32_t Timer();
+WatcomFunc<void(void*, int, char**)> datArgParser_Init;
+void datArgParser_Init_Hook(void* datArgParser, int argc, char* argv[]);
+
+WatcomFunc<void(void*)> rtRoot_Update;
+void rtRoot_Update_Hook(void* rtRoot);
+
+uint32_t rdtsc_Hook();
 
 void PatchSQ(uintptr_t SQ)
 {
@@ -52,8 +58,16 @@ void PatchSQ(uintptr_t SQ)
 
     KeyMap = (uint8_t*)(SQ + 0x503F58);
 
-    rtRoot_Update = MethodHook(SQ + 0x2AD788, rtRoot_Update_Hook);
-    WatcomHook(SQ + 0x33140, Timer);
+    HashTable_Access = SQ + 0x45260;
+    HashTable_Insert = SQ + 0x44EC0;
+
+    datArgParser_Init = SQ + 0x2EBE0;
+    Hook(SQ + 0x12A240, 0xE8, SQ + 0x1793F1);
+    WatcomHook(SQ + 0x1793F1, datArgParser_Init_Hook);
+
+    rtRoot_Update = MethodHook(SQ + 0x2AD788, SQ + 0x3314A);
+    WatcomHook(SQ + 0x3314A, rtRoot_Update_Hook);
+    WatcomHook(SQ + 0x33140, rdtsc_Hook);
 }
 
 LONG WINAPI ExceptionHandler(_EXCEPTION_POINTERS* Info);
@@ -109,6 +123,30 @@ void FatalError(const char* format, ...)
     fprintf(stderr, "Fatal Error: %s\n", buffer);
     MessageBoxA(NULL, buffer, "Fatal Error", MB_ICONERROR | MB_OK);
     exit(0);
+}
+
+void datArgParser_Init_Hook(void* datArgParser, int argc, char* argv[])
+{
+    datArgParser_Init(datArgParser, argc, argv);
+
+    struct Entry
+    {
+        size_t num;
+        const char** args;
+    };
+    static_assert(sizeof(Entry) == 8, "Wrong size: datArgParser_Init_Hook::Entry");
+
+#define InsertDefaultPath(name, defaultPath) \
+    if(!HashTable_Access(datArgParser, name)) \
+    { \
+        static char absolutePath[MAX_PATH]; \
+        if(_fullpath(absolutePath, defaultPath, MAX_PATH)) \
+            HashTable_Insert(datArgParser, name, new Entry { 1, new const char* { absolutePath } }); \
+    }
+
+    InsertDefaultPath("path", "..\\wav");
+    InsertDefaultPath("hdbpath", "..\\iff\\database");
+    InsertDefaultPath("archive", "..\\arc\\savage");
 }
 
 #include <Xinput.h>
@@ -210,27 +248,22 @@ LRESULT CALLBACK GameWindowProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam
     }
 }
 
-void DispatchWindowMessages()
+void rtRoot_Update_Hook(void* rtRoot)
 {
+    UpdateGamepadState();
+
     MSG msg;
     while(PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE))
     {
         TranslateMessage(&msg);
         DispatchMessageW(&msg);
     }
-}
 
-void __declspec(naked) rtRoot_Update_Hook()
-{
-    _asm pushad
-    _asm call UpdateGamepadState
-    _asm call DispatchWindowMessages
-    _asm popad
-    _asm jmp rtRoot_Update
+    rtRoot_Update(rtRoot);
 }
 
 #pragma comment(lib, "Winmm.lib")
-uint32_t Timer()
+uint32_t rdtsc_Hook()
 {
     static uint32_t count = 0;
 

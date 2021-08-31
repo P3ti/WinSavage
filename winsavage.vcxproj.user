@@ -1,12 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments>-path "x:\sq05\sq\wav" -hdbpath "x:\sq05\sq\iff\database" -archive "x:\sq05\sq\arc\savage.arc"</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerWorkingDirectory>x:\sq05\sq\bin</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LocalDebuggerCommandArguments>-path "x:\sq05\sq\wav" -hdbpath "x:\sq05\sq\iff\database" -archive "x:\sq05\sq\arc\savage.arc"</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerWorkingDirectory>x:\sq05\sq\bin</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
