@@ -1,5 +1,5 @@
 # WinSavage
-Windows runtime environment for Savage Quest, 1999 arcade title by Angel Studios.
+Windows "port" of Savage Quest, 1999 arcade title by Angel Studios.
 
 ![Screenshot](https://i.imgur.com/aiulR1sl.png)
 
@@ -9,7 +9,7 @@ Windows runtime environment for Savage Quest, 1999 arcade title by Angel Studios
 - Place WinSavage files to `SQ05\SQ\BIN`.
 - Configure display settings in `dgVoodooCpl.exe`.
 - If not having an XInput controller, use [x360ce](https://x360ce.com/).
-- Launch game via bundled `winsavage.bat`.
+- Launch `winsavage.exe`.
 
 ### XInput controls
 - Movement: `left thumbstick`
